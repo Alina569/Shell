@@ -26,12 +26,15 @@
 
 struct Process {
     int argc;
-    char **args;
+    char **argv;
     struct Process *pipe;
 };
 
 // Utilities -- globals
-
+int background_flag;
+char *fileIn, *fileOut;
 // Utilities -- functions
 
 int parse_input(char* line);
+struct Process *parse_commands(char* line);
+
