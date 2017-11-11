@@ -33,8 +33,38 @@ struct Process {
 // Utilities -- globals
 int background_flag;
 char *fileIn, *fileOut;
-// Utilities -- functions
+
+struct termios termios_current;
+struct termios termios_save;
+
+// Utilities -- fucntion  headers
 
 int parse_input(char* line);
 struct Process *parse_commands(char* line);
 
+// Utilities -- functions
+
+// stackoverflow answer.
+char* concat(const char *string1, const char *string2) {
+	const size_t len_str1 = strlen(string1);
+	const size_t len_str2 = strlen(string2);
+
+	char *result = malloc(len_str1 + len_str2 + 1); // NULL end
+	memcpy(result, string1, len_str1);
+	memcpy(result + len_str1, string2, len_str2 + 1); // cpy NULL
+
+	return result;
+}
+
+void configure(){
+
+	tcgetattr(0, &termios_current);
+	termios_save = termios_current;
+
+	termios_current.c_lflag &= ~(ICANON|ECHO);
+	tcsetattr(0, TCSANOW, &termios_current);
+}
+
+void recover_state(){
+	tcsetattr(0, TCSANOW, &termios_save);
+}
