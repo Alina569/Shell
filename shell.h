@@ -41,6 +41,7 @@ struct termios termios_save;
 
 int parse_input(char* line);
 struct Process *parse_commands(char* line);
+int execute_command(struct Process *process);
 
 // Utilities -- functions
 
