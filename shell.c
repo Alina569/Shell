@@ -5,7 +5,7 @@ int main(int argc, char **argv){
 	int status = TRUE;
 	char *line = (char*) malloc(sizeof(char)*INPUT_SIZE);
 
-	struct Process *commands;
+	struct Process *commands, *tmp;
 
 	configure();
 
@@ -18,6 +18,14 @@ int main(int argc, char **argv){
 		if(strlen(line) != 0) {
 			commands = parse_commands(line);
 			status = execute_command(commands);
+
+			while(commands != NULL) {
+				tmp = commands;
+				commands = commands->pipe;
+
+				free(tmp->argv);
+				free(tmp);
+			}
 		}
 	} while(status);
 
@@ -126,10 +134,66 @@ int execute_command(struct Process *process) {
 	int status;
 
 	pid = fork();
-	if (pid == 0){
-		status = execvp(process->argv[0], process->argv);
-		return status;
+	switch(pid){
+		case -1:
+			perror("Fork exc_commands");
+		break;
+		case 0:
+			//child -- check for fileOut and fileIn
+			if (fileOut != NULL){
+				// open and close the pipe
+				int des_out = open(fileOut, O_WRONLY|O_CREAT, 0600);
+				dup2(des_out, fileno(stdout));
+				close(des_out);
+			}
+			// put a return in here
+			// execute normaly
+			return run_command(process);
+		break;
+		default:
+			if (!background_flag) {
+				do {
+					waitpid(pid, &status, WUNTRACED);
+				} while(!WIFEXITED(status) && !WIFSIGNALED(status));
+			}
+		break;
 	}
-	return -1;
+	return 1;
 }
 
+int run_command(struct Process *process) {
+	int file_des[2], count;
+	pid_t pid;
+
+	if(process->pipe != NULL) {
+
+		//pipe(file_des);
+		pid = fork();
+		switch(pid){
+			case -1:
+				perror("Fork run_command");
+				return -1;
+			break;
+			case 0:
+				dup2(file_des[WRITE], WRITE);
+				close(file_des[WRITE]);
+				close(file_des[READ]);
+
+				return run_command(process->pipe);
+			break;
+			default:
+				dup2(file_des[READ], READ);
+				close(file_des[READ]);
+				close(file_des[WRITE]);
+
+				int run = execvp(process->argv[0], process->argv);
+
+				return run;
+			break;
+		}
+	} else {
+		int run = execvp(process->argv[0], process->argv);
+		return run;
+	}
+	return 1;
+}
