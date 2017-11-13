@@ -34,6 +34,10 @@ struct Process {
 int background_flag;
 char *fileIn, *fileOut;
 
+// hist -- utilities
+int history_count = 0;
+char history[256][INPUT_SIZE];
+
 struct termios termios_current;
 struct termios termios_save;
 
@@ -76,3 +80,15 @@ int print_history() {
 	execlp("cat", "cat", "-n", ".history", NULL);
 	return 2;
 }
+
+char* get_history(int position){
+	position--;
+	if (position > history_count || position < 0){
+		printf("Index error");
+		fflush(stdout);
+		exit(1);
+	} else {
+		return history[position];
+	}
+}
+
