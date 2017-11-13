@@ -70,3 +70,9 @@ void configure(){
 void recover_state(){
 	tcsetattr(0, TCSANOW, &termios_save);
 }
+
+// print the history file
+int print_history() {
+	execlp("cat", "cat", "-n", ".history", NULL);
+	return 2;
+}
