@@ -80,7 +80,7 @@ struct Process *parse_commands(char* line) {
 	char *token;
 	int position, str_init;
 
-	struct Process *newProc;
+	struct Process *newProcess;
 	struct Process *process = (struct Process*) malloc(sizeof(struct Process));
 
 	process->argc = 0;
@@ -99,6 +99,20 @@ struct Process *parse_commands(char* line) {
 	while(token != NULL){
 		switch(token[0]){
 			// add | > < & and quotes
+			case '>':
+			break;
+			case '<':
+			break;
+			case '|':
+				process->argc++;
+				process-> argv[position] = '\0';
+				newProcess = (struct Process*) malloc(sizeof(struct Process));
+				newProcess->pipe = process;
+				newProcess->argc = 0;
+				newProcess->argv = (char**) malloc(sizeof(char) * INPUT_SIZE);
+				process = newProcess;
+				position = 0;
+			break;
 			case '&':
 				background_flag = TRUE;
 			break;
