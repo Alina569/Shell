@@ -200,14 +200,42 @@ int run_command(struct Process *process) {
 				close(file_des[READ]);
 				close(file_des[WRITE]);
 
-				int run = execvp(process->argv[0], process->argv);
-
+				int run = cmp_exc_command( process->argv);
 				return run;
 			break;
 		}
 	} else {
-		int run = execvp(process->argv[0], process->argv);
+		int run = cmp_exc_command(process->argv);
 		return run;
 	}
 	return 1;
+}
+
+int cmp_exc_command(char **argv){
+	int exc_status;
+
+	if (strcmp(argv[0], "cd") == 0) {
+		printf("change dir");
+		fflush(stdout);
+		return 0;
+	} else {
+		if (strcmp(argv[0], "history") == 0) {
+			printf("print history");
+			fflush(stdout);
+			return 0;
+		} else {
+			if (fileIn != NULL){
+				int file_in_desc = open(fileIn, O_RDONLY);
+				dup2(file_in_desc, fileno(stdin));
+				close(file_in_desc);
+			}
+			exc_status = execvp(argv[0], argv);
+			if (exc_status == -1) {
+				perror("Command not found");
+				fflush(stdout);
+				return exc_status;
+			}
+			return exc_status;
+		}
+	}
 }
