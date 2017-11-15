@@ -47,6 +47,7 @@ int parse_input(char* line);
 struct Process *parse_commands(char* line);
 int execute_command(struct Process *process);
 int run_command(struct Process *process);
+int cmp_exc_command(char **argv);
 
 // Utilities -- functions
 
