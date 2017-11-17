@@ -63,6 +63,8 @@ char* concat(const char *string1, const char *string2) {
 	return result;
 }
 
+// Terminal state -- functions
+
 void configure(){
 
 	tcgetattr(0, &termios_current);
@@ -76,7 +78,8 @@ void recover_state(){
 	tcsetattr(0, TCSANOW, &termios_save);
 }
 
-// print the history file
+// History file -- functions
+
 int print_history() {
 	execlp("cat", "cat", "-n", ".history", NULL);
 	return 2;
@@ -92,4 +95,15 @@ char* get_history(int position){
 		return history[position];
 	}
 }
+
+void read_history(FILE *history_file) {
+	rewind(history_file); // begining of file
+	history_count = 0; // change to 0
+
+	while(fgets(history[history_count], INPUT_SIZE, history_file){
+		history_count++;
+	}
+}
+
+// change directory -- function
 
