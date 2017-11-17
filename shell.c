@@ -39,7 +39,7 @@ int parse_input(char *line) {
 	char buffer;
 	int position = 0;
 
-	// int history_nav = history_count;
+	int current_hist_navigation = history_count;
 
 	while(read(0, &buffer, 1) >= 0) {
 		if (buffer > 0) {
@@ -48,7 +48,29 @@ int parse_input(char *line) {
 					read(0, &buffer, 1);
 					read(0, &buffer, 1);
 
-					printf("Arrow key");
+					if (buffer == 'A') {
+						if (current_hist_navigation-1 >= 0){
+							current_hist_navigation--;
+
+							while(position >= 1){
+								write(2, "\10\33[1P", 5);
+								position--;
+							}
+
+							// print the history
+						}
+					} else if (buffer == 'B') {
+						while(position >= 1) {
+							write(2, "\10\33[1P", 5);
+							position--;
+						}
+						if (current_hist_navigation+1 < history_count) {
+							current_hist_navigation++;
+							// print the history
+						} else if (current_hist_navigation+1 == history_count){
+							current_hist_navigation = history_count;
+						}
+					}
 				break;
 				case BACKSPACE:
 					if (position >= 1) {
