@@ -100,7 +100,7 @@ void read_history(FILE *history_file) {
 	rewind(history_file); // begining of file
 	history_count = 0; // change to 0
 
-	while(fgets(history[history_count], INPUT_SIZE, history_file){
+	while(fgets(history[history_count], INPUT_SIZE, history_file)){
 		history_count++;
 	}
 }
