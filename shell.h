@@ -82,7 +82,7 @@ void recover_state(){
 // History file -- functions
 
 int print_history() {
-	execlp("cat", "cat", "-n", ".history", NULL);
+	execlp("cat", "cat", "-n", ".tmphistory", NULL);
 	return 2;
 }
 
