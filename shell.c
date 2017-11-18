@@ -8,6 +8,8 @@ int main(int argc, char **argv){
 	struct Process *commands, *tmp;
 
 	configure();
+	history_file = fopen(".tmphistory", "a+"); // append flag
+	read_history(history_file);
 
 	do {
 		printf("> ");
@@ -29,6 +31,7 @@ int main(int argc, char **argv){
 		}
 	} while(status);
 
+	fclose(history_file);
 	recover_state();
 	return 0;
 }
@@ -203,7 +206,7 @@ int run_command(struct Process *process) {
 
 	if(process->pipe != NULL) {
 
-		//pipe(file_des);
+		pipe(file_des);
 		pid = fork();
 		switch(pid){
 			case -1:
@@ -242,9 +245,8 @@ int cmp_exc_command(char **argv){
 		return 0;
 	} else {
 		if (strcmp(argv[0], "history") == 0) {
-			printf("print history");
-			fflush(stdout);
-			return 0;
+			int print_status = print_history();
+			return print_status;
 		} else {
 			if (fileIn != NULL){
 				int file_in_desc = open(fileIn, O_RDONLY);
