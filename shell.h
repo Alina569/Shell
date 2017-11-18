@@ -33,6 +33,7 @@ struct Process {
 // Utilities -- globals
 int background_flag;
 char *fileIn, *fileOut;
+FILE *history_file;
 
 // hist -- utilities
 int history_count = 0;
