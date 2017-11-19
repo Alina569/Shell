@@ -17,7 +17,13 @@ int main(int argc, char **argv){
 
 		parse_input(line);
 		fflush(stdout);
+
 		if(strlen(line) != 0) {
+			// save the command in the history file
+			fprintf(history_file, "%s\n", line);
+			fflush(history_file);
+
+			read_history(history_file);
 			commands = parse_commands(line);
 			status = execute_command(commands);
 
@@ -42,7 +48,7 @@ int parse_input(char *line) {
 	char buffer;
 	int position = 0;
 
-	int current_hist_navigation = history_count;
+	int cur_hist_nav = history_count;
 
 	while(read(0, &buffer, 1) >= 0) {
 		if (buffer > 0) {
@@ -52,26 +58,40 @@ int parse_input(char *line) {
 					read(0, &buffer, 1);
 
 					if (buffer == 'A') {
-						if (current_hist_navigation-1 >= 0){
-							current_hist_navigation--;
+						if (cur_hist_nav-1 >= 0){
+							cur_hist_nav--;
 
 							while(position >= 1){
 								write(2, "\10\33[1P", 5);
 								position--;
 							}
-
-							// print the history
+							int i; // index
+							for (i=0; history[cur_hist_nav][i] != '\n'; i++) {
+								position = i;
+								line[i] = history[cur_hist_nav][i];
+								write(2, &line[i], 1);
+							}
+							position++;
 						}
+
 					} else if (buffer == 'B') {
 						while(position >= 1) {
 							write(2, "\10\33[1P", 5);
 							position--;
 						}
-						if (current_hist_navigation+1 < history_count) {
-							current_hist_navigation++;
-							// print the history
-						} else if (current_hist_navigation+1 == history_count){
-							current_hist_navigation = history_count;
+						if (cur_hist_nav+1 < history_count) {
+							cur_hist_nav++;
+
+							int i;
+							for(i=0; history[cur_hist_nav][i] != '\n'; i++) {
+								position = i;
+								line[i] = history[cur_hist_nav][i];
+								write(2, &line[i], 1);
+							}
+							position++;
+
+						} else if (cur_hist_nav+1 == history_count){
+							cur_hist_nav = history_count;
 						}
 					}
 				break;
