@@ -260,9 +260,16 @@ int cmp_exc_command(char **argv){
 	int exc_status;
 
 	if (strcmp(argv[0], "cd") == 0) {
-		printf("change dir");
-		fflush(stdout);
-		return 0;
+		if (argv[1] == NULL){
+			fprintf(stderr, "Expected argument\n");
+			return 1;
+		}
+		int cd_status = chdir(argv[1]);
+		if (cd_status != 0){
+			perror("chdir error");
+		}
+		return 1;
+
 	} else {
 		if (strcmp(argv[0], "history") == 0) {
 			int print_status = print_history();
