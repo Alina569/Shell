@@ -14,6 +14,7 @@
 #define TRUE 1
 #define READ 0
 #define FALSE 0
+#define ERROR 2
 
 #define INPUT_SIZE 256
 
