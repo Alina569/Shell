@@ -50,12 +50,12 @@ int parse_input(char *line) {
 
 	int cur_hist_nav = history_count;
 
-	while(read(0, &buffer, 1) >= 0) {
+	while(read(READ, &buffer, 1) >= 0) {
 		if (buffer > 0) {
 			switch (buffer) {
 				case ESCAPE:
-					read(0, &buffer, 1);
-					read(0, &buffer, 1);
+					read(READ, &buffer, 1);
+					read(READ, &buffer, 1);
 
 					if (buffer == 'A') {
 						if (cur_hist_nav-1 >= 0){
@@ -69,14 +69,14 @@ int parse_input(char *line) {
 							for (i=0; history[cur_hist_nav][i] != '\n'; i++) {
 								position = i;
 								line[i] = history[cur_hist_nav][i];
-								write(2, &line[i], 1);
+								write(ERROR, &line[i], 1);
 							}
 							position++;
 						}
 
 					} else if (buffer == 'B') {
 						while(position >= 1) {
-							write(2, "\10\33[1P", 5);
+							write(ERROR, "\10\33[1P", 5);
 							position--;
 						}
 						if (cur_hist_nav+1 < history_count) {
@@ -86,7 +86,7 @@ int parse_input(char *line) {
 							for(i=0; history[cur_hist_nav][i] != '\n'; i++) {
 								position = i;
 								line[i] = history[cur_hist_nav][i];
-								write(2, &line[i], 1);
+								write(ERROR, &line[i], 1);
 							}
 							position++;
 
@@ -97,12 +97,12 @@ int parse_input(char *line) {
 				break;
 				case BACKSPACE:
 					if (position >= 1) {
-						write(2, "\10\33[1P", 5);
+						write(ERROR, "\10\33[1P", 5);
 						position--;
 					}
 				break;
 				case DELETE:
-					write(2, "\33[1P", 4);
+					write(ERROR, "\33[1P", 4);
 				break;
 				case ENTER:
 					line[position] = '\0';
@@ -113,7 +113,7 @@ int parse_input(char *line) {
 				default:
 					line[position] = buffer;
 					position++;
-					write(2, &buffer, 1);
+					write(ERROR, &buffer, 1);
 				break;
 			}
 		}
