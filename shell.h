@@ -22,6 +22,7 @@
 #define BACKSPACE '\177'
 #define ENTER '\n'
 #define DELETE '~'
+#define NONE '\0'
 
 // Utilities -- structs
 
