@@ -137,7 +137,7 @@ struct Process *parse_commands(char* line) {
 	fileIn = NULL;
 
 	// local config
-	str_init = 0;
+	str_init = FALSE;
 	position = 0;
 
 	token = strtok(line, " ");
@@ -145,12 +145,18 @@ struct Process *parse_commands(char* line) {
 		switch(token[0]){
 			// add | > < & and quotes
 			case '>':
+				process->argc++;
+				process->argv[position] = NONE;
+				fileOut = strtok(NULL, " ");
 			break;
 			case '<':
+				process->argc++;
+				process->argv[position] = NONE;
+				fileIn = strtok(NULL, " ");
 			break;
 			case '|':
 				process->argc++;
-				process-> argv[position] = '\0';
+				process-> argv[position] = NONE;
 				newProcess = (struct Process*) malloc(sizeof(struct Process));
 				newProcess->pipe = process;
 				newProcess->argc = 0;
@@ -161,6 +167,10 @@ struct Process *parse_commands(char* line) {
 			case '&':
 				background_flag = TRUE;
 			break;
+			case '\"':
+			case '\'':
+				str_init = TRUE;
+				// the brak is inside the default case. cant break here.
 			default:
 				process->argc++;
 				process->argv[position] = token;
@@ -183,7 +193,7 @@ struct Process *parse_commands(char* line) {
 		}
 		token = strtok(NULL, " ");
 	}
-	process->argv[position] = '\0';
+	process->argv[position] = NONE;
 	return process;
 }
 
@@ -282,7 +292,7 @@ int cmp_exc_command(char **argv){
 			}
 			exc_status = execvp(argv[0], argv);
 			if (exc_status == -1) {
-				perror("Command not found");
+				printf("%s: Command not found\n", argv[0]);
 				fflush(stdout);
 				return exc_status;
 			}
