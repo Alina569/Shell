@@ -95,6 +95,7 @@ char* get_history(int position){
 		fflush(stdout);
 		exit(1);
 	} else {
+		//printf("%s", history[position]);
 		return history[position];
 	}
 }
@@ -108,5 +109,37 @@ void read_history(FILE *history_file) {
 	}
 }
 
-// change directory -- function
+char* check_history(char* line) {
+	int pos, foundp, i;
+	char substr[256];
 
+	char *cmd, *tmp;
+
+	for(pos = 0; line[pos] != '\0'; pos++){
+		if(line[pos] == '!'){
+			tmp = (char*) malloc(sizeof(char) * 256);
+			pos++;
+			foundp = pos;
+			while(line[pos] != ' ' && line[pos] != NONE && line[pos] != '\n'){
+				substr[pos-foundp] = line[pos];
+				pos++;
+			}
+			cmd = get_history(atoi(substr));
+			//printf("%s", cmd);
+			foundp--;
+			for (i=0; i < foundp; i++) {
+				tmp[i] = line[i];
+			}
+			for (i=0; i < strlen(cmd)-1; i++){
+				tmp[foundp+i] = cmd[i];
+			}
+			for (i=foundp+i; pos < strlen(line); pos++ && i++){
+				tmp[i] = line[pos];
+			}
+			tmp[pos] = NONE;
+			return tmp;
+		}
+	}
+	line[pos] = NONE;
+	return line;
+}

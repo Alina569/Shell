@@ -10,7 +10,7 @@ int main(int argc, char **argv){
 	configure();
 	history_file = fopen(".tmphistory", "a+"); // append flag
 	read_history(history_file);
-
+	// printf("%s",history[1]);
 	do {
 		printf("> ");
 		fflush(stdout);
@@ -20,6 +20,7 @@ int main(int argc, char **argv){
 
 		if(strlen(line) != 0) {
 			// save the command in the history file
+			line = check_history(line);
 			fprintf(history_file, "%s\n", line);
 			fflush(history_file);
 
