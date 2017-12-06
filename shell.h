@@ -130,13 +130,16 @@ char* check_history(char* line) {
 			for (i=0; i < foundp; i++) {
 				tmp[i] = line[i];
 			}
+
 			for (i=0; i < strlen(cmd)-1; i++){
 				tmp[foundp+i] = cmd[i];
 			}
+
 			for (i=foundp+i; pos < strlen(line); pos++ && i++){
 				tmp[i] = line[pos];
 			}
-			tmp[pos] = NONE;
+            //printf("%s TMP\n", tmp);
+			tmp[strlen(cmd) +1] = NONE;
 			return tmp;
 		}
 	}
