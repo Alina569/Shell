@@ -171,7 +171,7 @@ struct Process *parse_commands(char* line) {
 			case '\"':
 			case '\'':
 				str_init = TRUE;
-				// the brak is inside the default case. cant break here.
+				// the break is inside the default case. cant break here.
 			default:
 				process->argc++;
 				process->argv[position] = token;
@@ -272,7 +272,10 @@ int cmp_exc_command(char **argv){
 
 	if (strcmp(argv[0], "cd") == 0) {
 		if (argv[1] == NULL){
-			fprintf(stderr, "Expected argument\n");
+            int cd_status = chdir(getenv("HOME"));
+            if (cd_status != 0){
+                perror("Chdir 1 home\n");
+            }
 			return 1;
 		}
 		int cd_status = chdir(argv[1]);
